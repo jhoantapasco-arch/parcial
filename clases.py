@@ -1,3 +1,4 @@
+import io
 import os
 import re
 
@@ -52,6 +53,23 @@ class ArchivoCSV:
         # El tiempo pasa a ser el indice de las filas
         self.__tabla = tabla.set_index(self.__tiempo)
         self.__columnas = self.__tabla.columns
+
+    # ---------- informacion ----------
+    def __str__(self):
+        buffer = io.StringIO()
+        self.__tabla.info(buf=buffer)                 # info() escribe en el buffer
+        return ("\n===== INFORMACION DEL ARCHIVO CSV =====\n"
+                "Archivo: {}\n"
+                "{}\n"
+                "===== ESTADISTICOS (describe) =====\n"
+                "{}\n\n"
+                "Condiciones: {}\n"
+                "Canales disponibles: {}".format(
+                    self.__ruta,
+                    buffer.getvalue(),
+                    self.__tabla.describe().to_string(),
+                    self.verCondiciones(),
+                    self.verCanales()))
 
     def verTabla(self):
         return self.__tabla
