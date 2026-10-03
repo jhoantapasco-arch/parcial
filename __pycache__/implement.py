@@ -202,3 +202,50 @@ def main():
                 except Exception as error:
                     print("No se pudo realizar la operacion: {}".format(error))
 
+ # ------------------------------------------------------------
+        elif menu == 7:
+            archivo = pedirArchivo(sis, ArchivoMAT, "MAT")
+            if archivo is not None:
+                matriz = archivo.verMatriz()
+
+                if matriz is None:
+                    print("Primero debe cargar una variable desde la opcion 5.")
+                elif matriz.ndim != 3:
+                    print("La variable cargada no es una matriz 3D.")
+                else:
+                    print("Forma de la matriz: {}".format(matriz.shape))
+                    print("Ejes disponibles: 0 (canales), 1 (puntos), 2 (ensayos)")
+
+                    eje1 = validarRango(input("Primer eje: "), 0, 2)
+                    eje2 = validarRango(input("Segundo eje: "), 0, 2)
+                    while eje1 == eje2:
+                        eje2 = validarRango(
+                            input("Los ejes deben ser diferentes. Segundo eje: "), 0, 2)
+
+                    try:
+                        promedio, desviacion, ruta = archivo.estadisticos3D(eje1, eje2)
+                        print("Grafico guardado en: {}".format(ruta))
+                    except Exception as error:
+                        print("No se pudo calcular: {}".format(error))
+
+        # ------------------------------------------------------------
+        elif menu == 8:
+            print("\n===== ARCHIVOS CARGADOS =====")
+            archivos = sis.verArchivos()
+
+            if len(archivos) == 0:
+                print("No hay archivos cargados.")
+            else:
+                for nombre in archivos:
+                    tipo = "CSV" if isinstance(archivos[nombre], ArchivoCSV) else "MAT"
+                    print("-> {} ({})".format(nombre, tipo))
+
+        # ------------------------------------------------------------
+        elif menu == 9:
+            print("Hasta luego.")
+            break
+
+
+if __name__ == "__main__":
+    main()
+    
