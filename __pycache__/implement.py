@@ -113,3 +113,31 @@ def main():
                     print("Grafico guardado en: {}".format(ruta))
                 except Exception as error:
                     print("No se pudo graficar: {}".format(error))
+
+ # ------------------------------------------------------------
+        elif menu == 4:
+            archivo = pedirArchivo(sis, ArchivoCSV, "CSV")
+            if archivo is not None:
+                canales = archivo.verCanales()
+                if len(canales) < 2:
+                    print("El archivo no tiene suficientes canales numericos.")
+                    continue
+                print("\nCanales disponibles:")
+                canal1 = elegirDeLista(canales, "Seleccione el primer canal: ")
+                canal2 = elegirDeLista(canales, "Seleccione el segundo canal: ")
+
+                if canal1 == canal2:
+                    print("Debe elegir dos canales diferentes.")
+                    continue
+
+                nombreNueva = input("Nombre de la nueva columna: ")
+
+                try:
+                    archivo.diferenciaInterhemisferica(canal1, canal2, nombreNueva)
+                    print("\nResultado de la diferencia:")
+                    print(archivo.verTabla()[nombreNueva.strip()])
+                    ruta = archivo.mostrarDiferencia(canal1, canal2, nombreNueva.strip())
+                    print("Grafico guardado en: {}".format(ruta))
+                except Exception as error:
+                    print("No se pudo calcular la diferencia: {}".format(error))
+
