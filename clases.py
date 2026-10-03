@@ -133,3 +133,20 @@ class ArchivoMAT:
     def verNombreVariable(self):
         return self.__nombreVar
 
+class Sistema:
+    def __init__(self):
+        self.__archivos = {}
+
+    def ingresarArchivo(self, nombre, archivo):
+        self.__archivos[nombre] = archivo
+
+    def verArchivo(self, nombre):
+        return self.__archivos.get(nombre, None)
+
+    def verArchivos(self):
+        return self.__archivos
+
+    def buscarPorTipo(self, tipo):
+        """Devuelve los nombres de los archivos que son de la clase indicada."""
+        return [n for n, a in self.__archivos.items() if isinstance(a, tipo)]
+
