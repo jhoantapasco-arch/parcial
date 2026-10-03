@@ -53,4 +53,38 @@ def main():
             "9- Salir\n"
             "--> "), 1, 9)
 
+        # ------------------------------------------------------------
+        if menu == 1:
+                  tipArch = validarRango(input(
+                      "\nIndique el tipo de archivo:\n"
+                      "1- Archivo .mat\n"
+                      "2- Archivo .csv\n"
+                      "--> "), 1, 2)
       
+                  ruta = limpiarRuta(input("Ruta del archivo: "))
+      
+                  if not os.path.isfile(ruta):
+                      print("La ruta no existe.")
+                      continue
+      
+                  try:
+                      if tipArch == 1:
+                          archivo = ArchivoMAT(ruta)
+                      else:
+                          archivo = ArchivoCSV(ruta)
+                  except Exception as error:
+                      print("No se pudo cargar el archivo: {}".format(error))
+                      continue
+      
+                  nombre = input("Ingrese un nombre para identificar el archivo: ").strip()
+                  while nombre == "":
+                      nombre = input("El nombre no puede estar vacio: ").strip()
+      
+                  if sis.verArchivo(nombre) is not None:
+                      print("Ya existia un archivo con ese nombre; fue reemplazado.")
+      
+                  sis.ingresarArchivo(nombre, archivo)
+                  print("Archivo cargado correctamente.")
+      
+          
+          
