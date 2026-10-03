@@ -2,6 +2,7 @@ import os
 import re
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 plt.ion()
 
@@ -35,3 +36,34 @@ def guardarFigura(nombre):
     ruta = os.path.join(CARPETA, nombre)
     plt.savefig(ruta, dpi=150)
     return ruta
+
+
+class ArchivoCSV:
+    def __init__(self, ruta):
+        self.__ruta = ruta
+        self.__tiempo = "Tiempo"
+        self.__condicion = "Condición"
+        tabla = pd.read_csv(ruta, sep=None, engine="python")
+        # En los archivos del parcial las columnas se llaman time_ms y condition
+        tabla = tabla.rename(columns={"time_ms": self.__tiempo, "condition": self.__condicion})
+
+        # El tiempo pasa a ser el indice de las filas
+        self.__tabla = tabla.set_index(self.__tiempo)
+        self.__columnas = self.__tabla.columns
+
+    def verTabla(self):
+        return self.__tabla
+
+    def verCol(self):
+        return self.__tabla.columns
+
+    def verCondiciones(self):
+        return self.__tabla[self.__condicion].unique().tolist()
+
+    def verCanales(self):
+        """Columnas del CSV que son canales (sin la condicion ni el sujeto)."""
+        canales = []
+        for c in self.__tabla.columns:
+            if c != self.__condicion and c != "subject":
+                canales.append(c)
+        return canales
