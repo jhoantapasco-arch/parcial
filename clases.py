@@ -1,8 +1,10 @@
 import os
 import re
 
+import numpy as np
 import matplotlib.pyplot as plt
 import pandas as pd
+import scipy.io as sio
 
 plt.ion()
 
@@ -67,3 +69,49 @@ class ArchivoCSV:
             if c != self.__condicion and c != "subject":
                 canales.append(c)
         return canales
+
+
+class ArchivoMAT:
+    def __init__(self, ruta):
+        self.__ruta = ruta
+        self.__datos = sio.loadmat(ruta)
+        self.__variables = sio.whosmat(ruta)
+        self.__llaves = list(self.__datos.keys())
+        self.__matriz = None
+        self.__nombreVar = None
+
+    def __str__(self):
+        ancho = max([len(v[0]) for v in self.__variables] + [8])
+        linea = "-" * (ancho + 44)
+        texto = "\n===== VARIABLES DEL ARCHIVO MAT =====\n"
+        texto += "Archivo: {}\n".format(self.__ruta)
+        texto += linea + "\n"
+        texto += "{:<4}{:<{w}}  {:<18}{}\n".format("N°", "Variable", "Dimensiones", "Tipo", w=ancho)
+        texto += linea + "\n"
+        for i, v in enumerate(self.__variables):
+            texto += "{:<4}{:<{w}}  {:<18}{}\n".format(i, v[0], str(v[1]), v[2], w=ancho)
+        texto += linea + "\n"
+        texto += "Llaves del diccionario: {}".format(self.__llaves)
+        return texto
+
+    def verLlaves(self):
+        return self.__llaves
+
+    def verVariables(self):
+        return self.__variables
+
+    def cargarMatriz(self, numero):
+        nombre = self.__variables[numero][0]
+        matriz = self.__datos[nombre]
+        if not isinstance(matriz, np.ndarray) or not np.issubdtype(matriz.dtype, np.number):
+            raise ValueError("La variable '{}' no es una matriz numerica.".format(nombre))
+        self.__matriz = matriz
+        self.__nombreVar = nombre
+        return self.__matriz
+
+    def verMatriz(self):
+        return self.__matriz
+
+    def verNombreVariable(self):
+        return self.__nombreVar
+
