@@ -141,3 +141,64 @@ def main():
                 except Exception as error:
                     print("No se pudo calcular la diferencia: {}".format(error))
 
+  # ------------------------------------------------------------
+        elif menu == 5:
+            archivo = pedirArchivo(sis, ArchivoMAT, "MAT")
+            if archivo is not None:
+                print(archivo)
+
+                variables = archivo.verVariables()
+                if len(variables) == 0:
+                    print("El archivo no contiene variables.")
+                    continue
+
+                numero = validarRango(input("\nSeleccione el numero de la variable a cargar: "),
+                                      0, len(variables) - 1)
+                try:
+                    matriz = archivo.cargarMatriz(numero)
+                    print("\nMatriz cargada: {}".format(archivo.verNombreVariable()))
+                    print("Forma: {}".format(matriz.shape))
+                    print("Dimension: {}".format(matriz.ndim))
+                except Exception as error:
+                    print("No se pudo cargar la variable: {}".format(error))
+
+        # ------------------------------------------------------------
+        elif menu == 6:
+            archivo = pedirArchivo(sis, ArchivoMAT, "MAT")
+            if archivo is not None:
+                matriz = archivo.verMatriz()
+
+                if matriz is None:
+                    print("Primero debe cargar una variable desde la opcion 5.")
+                    continue
+
+                matriz2D = archivo.convertir2D()          # (canales, puntos totales)
+                canales, puntosTotales = matriz2D.shape
+
+                print("\nNumero de canales disponibles: {} (0 a {})".format(canales, canales - 1))
+                print("Puntos totales (2D): {}".format(puntosTotales))
+
+                c1 = validarRango(input("Canal 1: "), 0, canales - 1)
+                c2 = validarRango(input("Canal 2: "), 0, canales - 1)
+                c3 = validarRango(input("Canal 3: "), 0, canales - 1)
+                c4 = validarRango(input("Canal 4: "), 0, canales - 1)
+
+                pmin = validarRango(input("Punto minimo: "), 0, puntosTotales - 1)
+                pmax = validarRango(input("Punto maximo: "), pmin + 1, puntosTotales)
+
+                print("\nOperacion:\n1- Suma\n2- Resta\n3- Multiplicacion")
+                op = validarRango(input("--> "), 1, 3)
+
+                if op == 1:
+                    funcion, nombreOp = suma, "Suma"
+                elif op == 2:
+                    funcion, nombreOp = resta, "Resta"
+                else:
+                    funcion, nombreOp = multiplicacion, "Multiplicacion"
+
+                try:
+                    ruta = archivo.operarCanales(funcion, [c1, c2, c3, c4], pmin, pmax, nombreOp)
+                    print("Grafico guardado en: {}".format(ruta))
+                except Exception as error:
+                    print("No se pudo realizar la operacion: {}".format(error))
+
